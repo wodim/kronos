@@ -59,46 +59,31 @@ SET(LIB_SUFFIX
 	CACHE STRING "Define suffix of directory name (32/64)"
 )
 
-# Get revision number from SVN
+# Get revision number from git
 SET(MANUAL_REVISION
-	CACHE STRING "Manually set the revision number"
+	CACHE STRING "Manually set the git revision"
 )
 
 STRING(COMPARE EQUAL "${MANUAL_REVISION}" "" MANUAL_REVISION_UNSET)
 IF(MANUAL_REVISION_UNSET)
-	# No manually forced revision number, gotta guess one now
-	FIND_PACKAGE(Subversion)
-	IF(Subversion_FOUND)
-		MESSAGE(STATUS "Found Subversion ${Subversion_VERSION_SVN}")
-		Subversion_WC_INFO(${PROJECT_SOURCE_DIR} KVIrc)
-		IF(DEFINED KVIrc_WC_REVISION)
-			SET(CMAKE_KVIRC_BUILD_REVISION ${KVIrc_WC_REVISION})
-			MESSAGE(STATUS "Current revision is ${KVIrc_WC_REVISION}")
-		ELSE()
-			MESSAGE(STATUS "No Subversion working copy found")
-		ENDIF()
+	EXECUTE_PROCESS(COMMAND git rev-parse --short=10 -q HEAD OUTPUT_VARIABLE CMAKE_KVIRC_BUILD_REVISION)
+	IF(EXISTS "${CMAKE_SOURCE_DIR}/.gitrevision")
+		# We're in a release package created using makedist.sh, so we should include a .gitrevision file
+		FILE(READ "${CMAKE_SOURCE_DIR}/.gitrevision" DISTGITREVISION)
+		STRING(STRIP "${DISTGITREVISION}" CMAKE_KVIRC_BUILD_REVISION)
+		MESSAGE(STATUS "Forced GIT revision from .gitrevision")
 	ELSE()
-		IF(EXISTS "${CMAKE_SOURCE_DIR}/.svnrevision")
-			# We're in a release package created using makedist.sh, so we should include a .svnrevision file
-			FILE(READ "${CMAKE_SOURCE_DIR}/.svnrevision" DISTSVNREVISION)
-			STRING(STRIP "${DISTSVNREVISION}" CMAKE_KVIRC_BUILD_REVISION)
-			MESSAGE(STATUS "SVN revision is ${CMAKE_KVIRC_BUILD_REVISION}")
-		ELSE()
-			MESSAGE(STATUS "No revision number found.")
-		ENDIF()
+		MESSAGE(STATUS "Autodetected GIT revision")
 	ENDIF()
-
 ELSE()
 	# Manually forced revision number
 	SET(CMAKE_KVIRC_BUILD_REVISION ${MANUAL_REVISION})
-	MESSAGE(STATUS "Current revision has been manually set to ${MANUAL_REVISION}")
+	MESSAGE(STATUS "Current revision has been manually set")
 ENDIF()
 
+STRING(REGEX REPLACE "\n" "" CMAKE_KVIRC_BUILD_REVISION "${CMAKE_KVIRC_BUILD_REVISION}")
 
-# Simplify eventual mixed revisions and strange tweaks with letters in it
-STRING(REGEX REPLACE ":[0-9a-zA-Z]+" "" CMAKE_KVIRC_BUILD_REVISION "${CMAKE_KVIRC_BUILD_REVISION}")
-STRING(REGEX REPLACE "[^0-9]+" "" CMAKE_KVIRC_BUILD_REVISION "${CMAKE_KVIRC_BUILD_REVISION}")
-
+MESSAGE(STATUS "GIT revision is ${CMAKE_KVIRC_BUILD_REVISION}")
 
 # Set man dir
 SET(MANDIR
