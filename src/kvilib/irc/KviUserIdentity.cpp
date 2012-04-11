@@ -48,8 +48,6 @@ bool KviUserIdentity::load(KviConfigurationFile & cfg)
 	m_szUserName = cfg.readEntry("UserName");
 	// FIXME: At least scramble the pass ?
 	m_szPassword = cfg.readEntry("Password");
-	KviPixmap def;
-	m_pixAvatar = cfg.readPixmapEntry("Avatar",def);
 	m_szPartMessage = cfg.readEntry("PartMessage");
 	m_szQuitMessage= cfg.readEntry("QuitMessage");
 	m_szAge = cfg.readEntry("Age");
@@ -73,7 +71,6 @@ bool KviUserIdentity::save(KviConfigurationFile & cfg)
 	cfg.writeEntry("UserName",m_szUserName);
 	// FIXME: At least scramble the pass ?
 	cfg.writeEntry("Password",m_szPassword);
-	cfg.writeEntry("Avatar",m_pixAvatar);
 	cfg.writeEntry("PartMessage",m_szPartMessage);
 	cfg.writeEntry("QuitMessage",m_szQuitMessage);
 	cfg.writeEntry("Age",m_szAge);
@@ -100,13 +97,9 @@ void KviUserIdentity::copyFrom(const KviUserIdentity & src)
 	m_szRealName = src.m_szRealName;
 	m_szPassword = src.m_szPassword;
 
-	m_pixAvatar = src.m_pixAvatar;
-
 	m_szUserName = src.m_szUserName;
 	m_szRealName = src.m_szRealName;
 	m_szPassword = src.m_szPassword;
-
-	m_pixAvatar = src.m_pixAvatar;
 
 	m_szPartMessage = src.m_szPartMessage;
 	m_szQuitMessage = src.m_szQuitMessage;

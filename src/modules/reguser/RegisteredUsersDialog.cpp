@@ -861,37 +861,6 @@ void RegisteredUsersDialog::importClicked()
 			}
 		}
 		if(!f.load(count))goto read_error;
-		if(count)
-		{
-			// there is an avatar
-			QImage img;
-			QImageReader io;
-			io.setDevice(&f);
-			io.setFormat("PNG");
-			img=io.read();
-//			if(io.read())goto read_error;
-
-			if(img.isNull())qDebug("Ops.. readed a null image ?");
-
-			QString fName = u->name();
-			KviFileUtils::adjustFilePath(fName);
-
-			QString fPath;
-			int rnm = 0 ;
-			do
-			{
-				g_pApp->getLocalKvircDirectory(fPath,KviApplication::Avatars,fName);
-				fPath.append(QString("%1.png").arg(rnm));
-				rnm++;
-			} while(KviFileUtils::fileExists(fPath));
-
-			if(!img.save(fPath,"PNG"))
-			{
-				qDebug("Can't save image %s",fPath.toUtf8().data());
-			} else {
-				u->setProperty("avatar",fPath);
-			}
-		}
 	}
 
 	goto succesfull_import;

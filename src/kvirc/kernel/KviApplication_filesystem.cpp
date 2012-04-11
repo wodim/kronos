@@ -88,7 +88,6 @@ void KviApplication::getGlobalKvircDirectory(QString &szData,KvircSubdir dir,con
 		case Scripts       : szData.append("scripts");                                                 break;
 		case MsgColors     : szData.append("msgcolors");                                               break;
 		case Charmaps      : szData.append("charmaps");                                                break;
-		case Avatars       : szData.append("avatars");                                                 break;
 		case DefScript     : szData.append("defscript");                                               break;
 		case License       : szData.append("license");                                                 break;
 		case Filters       : szData.append("filters");                                                 break;
@@ -185,7 +184,6 @@ void KviApplication::getLocalKvircDirectory(QString &szData,KvircSubdir dir,cons
 		case Trash         : szData.append("trash");                                             break;
 		case MsgColors     : szData.append("msgcolors");                                         break;
 		case Charmaps      : szData.append("charmaps");                                          break;
-		case Avatars       : szData.append("avatars");                                           break;
 		case License       : szData.append("license");                                           break;
 		case Filters       : szData.append("filters");                                           break;
 		case Tmp           : szData.append("tmp");                                               break;

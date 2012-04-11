@@ -66,8 +66,6 @@ protected:
 	QString m_szRealName;
 	QString m_szPassword;
 	
-	KviPixmap m_pixAvatar;
-	
 	QString m_szPartMessage;
 	QString m_szQuitMessage;
 	
@@ -123,12 +121,6 @@ public:
 	* \return const QString &
 	*/
 	const QString & password() const { return m_szPassword; };
-
-	/**
-	* \brief Returns the avatar of the user
-	* \return KviPixmap
-	*/
-	const KviPixmap & avatar() const { return m_pixAvatar; };
 
 	/**
 	* \brief Returns the part message of the user
@@ -245,13 +237,6 @@ public:
 	* \return void
 	*/
 	void setPassword(const QString & szPassword){ m_szPassword = szPassword; };
-
-	/**
-	* \brief Sets the avatar of the user
-	* \param pix The avatar of the user
-	* \return void
-	*/
-	void setAvatar(const KviPixmap & pix){ m_pixAvatar = pix; };
 
 	/**
 	* \brief Sets the part messaege of the user

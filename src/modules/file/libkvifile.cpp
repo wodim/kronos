@@ -1140,7 +1140,7 @@ static bool file_kvs_cmd_writeLines(KviKvsModuleCommandCall * c)
 	@description:
 		Returns the path to the KVIrc local data directory.[br]
 		The KVIrc local data directory is always writable and contains
-		the various subdirectories that KVIrc uses internally: audio, avatars,
+		the various subdirectories that KVIrc uses internally: audio,
 		config, help, incoming, log, modules, msgcolors and pics.[br]
 		If <relative_path> is passed, then it is appended to the directory path to
 		form a complete filepath.[br]
@@ -1285,7 +1285,7 @@ static bool file_kvs_fnc_cwd(KviKvsModuleFunctionCall * c)
 	@description:
 		Returns the path to the KVIrc global data directory.[br]
 		The KVIrc local data directory is always readable (but usually not writable) and contains
-		the various subdirectories that KVIrc uses internally: audio, avatars,
+		the various subdirectories that KVIrc uses internally: audio,
 		config, help, incoming, log, modules, msgcolors and pics.[br]
 		If <relative_path> is passed, then it is appended to the directory path to
 		form a complete filepath.[br]

@@ -55,7 +55,6 @@ namespace KviKvsCoreFunctions
 	KVSCF(array);
 	KVSCF(asciiToBase64);
 	KVSCF(asciiToHex);
-	KVSCF(avatar);
 	KVSCF(away);
 	KVSCF(b);
 	KVSCF(base64ToAscii);

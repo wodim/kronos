@@ -40,7 +40,7 @@
 		Registration of users in KVIrc
 	@keyterms:
 		registered users, registration mask, registered user properties,
-		user properties, notify property, avatar property
+		user properties, notify property
 	@body:
 		[big]Introduction[/big][br]
 		The "registered user database" is basically a set of users with associated
@@ -108,8 +108,6 @@
 		One of the recognized properties is the "[doc:notify_list]notify[/doc]" property.
 		When an user is found to have this property set to a special value
 		KVIrc will attempt to track the user presence on IRC.
-		Another one is the [doc:avatar]avatar[/doc] property. Its value should be the
-		name of the "default" [doc:avatar]avatar image file[/doc] for the specified user.[br]
 		The "ignore" property should be set to "1" (or "true") for users that have to be ignored (:D).[br]
 		[br]
 		[big]The interface to the database[/big][br]

@@ -395,20 +395,6 @@ RegisteredUserEntryDialog::RegisteredUserEntryDialog(QWidget *p,KviRegisteredUse
 	f->setFrameStyle(QFrame::HLine | QFrame::Sunken);
 	g->addWidget(f,2,0,1,3);
 
-	m_pAvatar = 0;
-	if(r)
-	{
-		const QString av = r->getProperty("avatar");
-		if(!av.isEmpty())
-		{
-			m_pAvatar = new KviPixmap(av.toUtf8().data());
-		}
-	}
-	if(!m_pAvatar)m_pAvatar = new KviPixmap();
-
-	m_pAvatarSelector = new KviPixmapSelector(p2,__tr2qs_ctx("Avatar","register"),m_pAvatar,true);
-	g->addWidget(m_pAvatarSelector,3,0,1,3);
-
 	f = new QFrame(p2);
 	f->setFrameStyle(QFrame::HLine | QFrame::Sunken);
 	g->addWidget(f,4,0,1,3);
@@ -531,7 +517,6 @@ void RegisteredUserEntryDialog::closeEvent(QCloseEvent *e)
 
 RegisteredUserEntryDialog::~RegisteredUserEntryDialog()
 {
-	delete m_pAvatar;
 	delete m_pPropertyDict;
 	delete m_pCustomColor;
 }
@@ -630,14 +615,6 @@ void RegisteredUserEntryDialog::okClicked()
 	}
 	u->setProperty("comment",m_pCommentEdit->text());
 
-	m_pAvatarSelector->commit();
-
-	if(!m_pAvatar->isNull())
-	{
-		QString szPath = m_pAvatar->path();
-		u->setProperty("avatar",szPath);
-	}
-
 	if(m_pNotifyCheck->isChecked())
 	{
 		QString szNicks = m_pNotifyNick->text();
@@ -654,7 +631,6 @@ void RegisteredUserEntryDialog::okClicked()
 	
 	m_pPropertyDict->remove("comment");
 	m_pPropertyDict->remove("notify");
-	m_pPropertyDict->remove("avatar");
 
 	KviPointerHashTableIterator<QString,QString> it(*m_pPropertyDict);
 	while(QString *s = it.current())
@@ -735,17 +711,6 @@ void RegisteredUserEntryDialog::editMaskClicked()
 
 void RegisteredUserEntryDialog::editAllPropertiesClicked()
 {
-	m_pAvatarSelector->commit();
-
-	if(m_pAvatar->isNull())
-	{
-		m_pPropertyDict->remove("avatar");
-	} else {
-		KviCString szPath = m_pAvatar->path();
-		if(szPath.isEmpty())m_pPropertyDict->remove("avatar");
-		else m_pPropertyDict->replace("avatar",new QString(szPath));
-	}
-
 	if(m_pNotifyCheck->isChecked())
 	{
 		QString szNicks = m_pNotifyNick->text();
@@ -782,15 +747,6 @@ void RegisteredUserEntryDialog::editAllPropertiesClicked()
 	m_pNotifyCheck->setChecked(bGotIt);
 	m_pNotifyNick->setEnabled(bGotIt);
 	if(!bGotIt)m_pNotifyNick->setText("");
-
-	QString * avatar = m_pPropertyDict->find("avatar");
-	bGotIt = false;
-	if(avatar)
-	{
-		if(!avatar->isEmpty())
-			m_pAvatarSelector->setImagePath(*avatar);
-	}
-
 }
 
 #ifndef COMPILE_USE_STANDALONE_MOC_SOURCES

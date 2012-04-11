@@ -47,7 +47,6 @@
 * \def KVI_DEFAULT_CTCP_PAGE_REPLY Reply to CTCP PAGE
 * \def KVI_DEFAULT_AWAY_MESSAGE Away message
 * \def KVI_DEFAULT_AWAY_NICK Nickname when in away mode
-* \def KVI_MAX_PENDING_AVATARS Maximum number of avatars to download simultanously
 * \def KVI_MAX_RECENT_SERVERS Maximum number of servers to hold in "recent" menu
 * \def KVI_MAX_RECENT_CHANNELS Maximum number of channels to hold in "recent" menu
 * \def KVI_MAX_RECENT_NICKNAMES Maximum number of nicknames to hold in "recent" menu
@@ -68,21 +67,20 @@
 
 #define KVI_DEFAULT_NICKNAME_TOKEN "%nick%"
 
-#define KVI_DEFAULT_NICKNAME1 "newbie"
+#define KVI_DEFAULT_NICKNAME1 "n00bie"
 #define KVI_DEFAULT_NICKNAME2 "%nick%|2"
 #define KVI_DEFAULT_NICKNAME3 "%nick%|3"
 #define KVI_DEFAULT_NICKNAME4 "%nick%|4"
-#define KVI_DEFAULT_USERNAME "kvirc"
-#define KVI_DEFAULT_REALNAME "KVIrc $version(v) $version(n) http://kvirc.net/"
+#define KVI_DEFAULT_USERNAME "kronos"
+#define KVI_DEFAULT_REALNAME "Kronos $version(v) $version(n)"
 
-#define KVI_DEFAULT_PART_MESSAGE "Once you know what it is you want to be true, instinct is a very useful device for enabling you to know that it is"
-#define KVI_DEFAULT_QUIT_MESSAGE "KVIrc $version(v) $version(n) http://www.kvirc.net/"
+#define KVI_DEFAULT_PART_MESSAGE "Go slowly"
+#define KVI_DEFAULT_QUIT_MESSAGE "Kronos $version(v) $version(n)"
 #define KVI_DEFAULT_CTCP_USERINFO_REPLY "I'm too lazy to edit this field."
 #define KVI_DEFAULT_CTCP_PAGE_REPLY "Your message has been received and logged"
-#define KVI_DEFAULT_AWAY_MESSAGE "I'm off to see the wizard."
+#define KVI_DEFAULT_AWAY_MESSAGE "Gone catching butterflies."
 #define KVI_DEFAULT_AWAY_NICK "%nick%|NotHere"
 
-#define KVI_MAX_PENDING_AVATARS 20
 #define KVI_MAX_RECENT_SERVERS 10
 #define KVI_MAX_RECENT_CHANNELS 30
 #define KVI_MAX_RECENT_NICKNAMES 10

@@ -1148,10 +1148,10 @@ void KviIrcServerParser::parseCtcpRequestVersion(KviCtcpMessage *msg)
 			QString szVersion;
 
 
-			szVersion = "KVIrc " KVI_VERSION;
+			szVersion = "Kronos " KVI_VERSION;
 			if(KviBuildInfo::buildRevision()!=QString())
 			{
-				szVersion+= " svn-";
+				szVersion+= " git-";
 				szVersion+=KviBuildInfo::buildRevision();
 			}
 			szVersion += " '" KVI_RELEASE_NAME "' " KVI_SOURCES_DATE " - build ";

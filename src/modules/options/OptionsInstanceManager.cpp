@@ -32,7 +32,6 @@
 
 #include "OptionsWidget_alertsAndHighlighting.h"
 #include "OptionsWidget_antiSpam.h"
-#include "OptionsWidget_avatar.h"
 #include "OptionsWidget_away.h"
 #include "OptionsWidget_channel.h"
 #include "OptionsWidget_connection.h"
@@ -93,11 +92,6 @@ KviOptionsWidget * classOptionsWidget_alerts_createInstanceProc(QWidget * parent
 KviOptionsWidget * classOptionsWidget_antispam_createInstanceProc(QWidget * parent)
 {
 	return new OptionsWidget_antispam(parent);
-}
-
-KviOptionsWidget * classOptionsWidget_avatar_createInstanceProc(QWidget * parent)
-{
-	return new OptionsWidget_avatar(parent);
 }
 
 KviOptionsWidget * classOptionsWidget_away_createInstanceProc(QWidget * parent)
@@ -208,11 +202,6 @@ KviOptionsWidget * classOptionsWidget_identity_createInstanceProc(QWidget * pare
 KviOptionsWidget * classKviIdentityGeneralOptionsWidget_createInstanceProc(QWidget * parent)
 {
 	return new KviIdentityGeneralOptionsWidget(parent);
-}
-
-KviOptionsWidget * classOptionsWidget_identityAvatar_createInstanceProc(QWidget * parent)
-{
-	return new OptionsWidget_identityAvatar(parent);
 }
 
 KviOptionsWidget * classOptionsWidget_identityAdvanced_createInstanceProc(QWidget * parent)
@@ -500,8 +489,6 @@ static const char * g_szName_OptionsWidget_alerts = KVI_OPTIONS_WIDGET_NAME_Opti
 static const char * g_szClassName_OptionsWidget_alerts = "OptionsWidget_alerts";
 static const char * g_szName_OptionsWidget_antispam = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_antispam;
 static const char * g_szClassName_OptionsWidget_antispam = "OptionsWidget_antispam";
-static const char * g_szName_OptionsWidget_avatar = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_avatar;
-static const char * g_szClassName_OptionsWidget_avatar = "OptionsWidget_avatar";
 static const char * g_szName_OptionsWidget_away = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_away;
 static const char * g_szClassName_OptionsWidget_away = "OptionsWidget_away";
 static const char * g_szName_OptionsWidget_channel = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_channel;
@@ -546,8 +533,6 @@ static const char * g_szName_OptionsWidget_identity = KVI_OPTIONS_WIDGET_NAME_Op
 static const char * g_szClassName_OptionsWidget_identity = "OptionsWidget_identity";
 static const char * g_szName_KviIdentityGeneralOptionsWidget = KVI_OPTIONS_WIDGET_NAME_KviIdentityGeneralOptionsWidget;
 static const char * g_szClassName_KviIdentityGeneralOptionsWidget = "KviIdentityGeneralOptionsWidget";
-static const char * g_szName_OptionsWidget_identityAvatar = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_identityAvatar;
-static const char * g_szClassName_OptionsWidget_identityAvatar = "OptionsWidget_identityAvatar";
 static const char * g_szName_OptionsWidget_identityAdvanced = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_identityAdvanced;
 static const char * g_szClassName_OptionsWidget_identityAdvanced = "OptionsWidget_identityAdvanced";
 static const char * g_szName_OptionsWidget_identityProfile = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_identityProfile;
@@ -1551,42 +1536,6 @@ OptionsInstanceManager::OptionsInstanceManager()
 		e1->pChildList = 0;
 
 		e1 = new OptionsWidgetInstanceEntry;
-		e1->createProc = &classOptionsWidget_identityAvatar_createInstanceProc;
-		e1->pWidget = 0;
-		e1->szClassName = g_szClassName_OptionsWidget_identityAvatar;
-		e1->eIcon = KVI_OPTIONS_WIDGET_ICON_OptionsWidget_identityAvatar;
-		#ifdef KVI_OPTIONS_WIDGET_PRIORITY_OptionsWidget_identityAvatar
-		e1->iPriority = KVI_OPTIONS_WIDGET_PRIORITY_OptionsWidget_identityAvatar;
-		#else
-		e1->iPriority = 0;
-		#endif
-		#ifdef KVI_OPTIONS_WIDGET_KEYWORDS_OptionsWidget_identityAvatar
-		e1->szKeywordsNoLocale = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_identityAvatar","KVI_OPTIONS_WIDGET_KEYWORDS_OptionsWidget_identityAvatar;
-		#else
-		e1->szKeywordsNoLocale = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_identityAvatar;
-		#endif
-		e1->szKeywords = __tr2qs_ctx_no_xgettext(e1->szKeywordsNoLocale.toUtf8().data(),"options");;
-		#ifdef KVI_OPTIONS_WIDGET_GROUP_OptionsWidget_identityAvatar
-		e1->szGroup = KVI_OPTIONS_WIDGET_GROUP_OptionsWidget_identityAvatar;
-		#else
-		e1->szGroup = "general";
-		#endif
-		#ifdef KVI_OPTIONS_WIDGET_CONTAINER_OptionsWidget_identityAvatar
-		e1->bIsContainer = KVI_OPTIONS_WIDGET_CONTAINER_OptionsWidget_identityAvatar;
-		#else
-		e1->bIsContainer = false;
-		#endif
-		#ifdef KVI_OPTIONS_WIDGET_NOTCONTAINED_OptionsWidget_identityAvatar
-		e1->bIsNotContained = KVI_OPTIONS_WIDGET_NOTCONTAINED_OptionsWidget_identityAvatar;
-		#else
-		e1->bIsNotContained = false;
-		#endif
-		e1->szNameNoLocale = g_szName_OptionsWidget_identityAvatar;
-		e1->szName = __tr2qs_ctx_no_xgettext(g_szName_OptionsWidget_identityAvatar,"options");
-		e0->pChildList->append(e1);
-		e1->pChildList = 0;
-
-		e1 = new OptionsWidgetInstanceEntry;
 		e1->createProc = &classOptionsWidget_identityAdvanced_createInstanceProc;
 		e1->pWidget = 0;
 		e1->szClassName = g_szClassName_OptionsWidget_identityAdvanced;
@@ -2426,42 +2375,6 @@ OptionsInstanceManager::OptionsInstanceManager()
 				e3->szName = __tr2qs_ctx_no_xgettext(g_szName_OptionsWidget_alerts,"options");
 				e2->pChildList->append(e3);
 				e3->pChildList = 0;
-
-			e2 = new OptionsWidgetInstanceEntry;
-			e2->createProc = &classOptionsWidget_avatar_createInstanceProc;
-			e2->pWidget = 0;
-			e2->szClassName = g_szClassName_OptionsWidget_avatar;
-			e2->eIcon = KVI_OPTIONS_WIDGET_ICON_OptionsWidget_avatar;
-			#ifdef KVI_OPTIONS_WIDGET_PRIORITY_OptionsWidget_avatar
-			e2->iPriority = KVI_OPTIONS_WIDGET_PRIORITY_OptionsWidget_avatar;
-			#else
-			e2->iPriority = 0;
-			#endif
-			#ifdef KVI_OPTIONS_WIDGET_KEYWORDS_OptionsWidget_avatar
-			e2->szKeywordsNoLocale = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_avatar","KVI_OPTIONS_WIDGET_KEYWORDS_OptionsWidget_avatar;
-			#else
-			e2->szKeywordsNoLocale = KVI_OPTIONS_WIDGET_NAME_OptionsWidget_avatar;
-			#endif
-			e2->szKeywords = __tr2qs_ctx_no_xgettext(e2->szKeywordsNoLocale.toUtf8().data(),"options");;
-			#ifdef KVI_OPTIONS_WIDGET_GROUP_OptionsWidget_avatar
-			e2->szGroup = KVI_OPTIONS_WIDGET_GROUP_OptionsWidget_avatar;
-			#else
-			e2->szGroup = "general";
-			#endif
-			#ifdef KVI_OPTIONS_WIDGET_CONTAINER_OptionsWidget_avatar
-			e2->bIsContainer = KVI_OPTIONS_WIDGET_CONTAINER_OptionsWidget_avatar;
-			#else
-			e2->bIsContainer = false;
-			#endif
-			#ifdef KVI_OPTIONS_WIDGET_NOTCONTAINED_OptionsWidget_avatar
-			e2->bIsNotContained = KVI_OPTIONS_WIDGET_NOTCONTAINED_OptionsWidget_avatar;
-			#else
-			e2->bIsNotContained = false;
-			#endif
-			e2->szNameNoLocale = g_szName_OptionsWidget_avatar;
-			e2->szName = __tr2qs_ctx_no_xgettext(g_szName_OptionsWidget_avatar,"options");
-			e1->pChildList->append(e2);
-			e2->pChildList = 0;
 
 			e2 = new OptionsWidgetInstanceEntry;
 			e2->createProc = &classOptionsWidget_away_createInstanceProc;

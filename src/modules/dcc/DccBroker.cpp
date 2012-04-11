@@ -564,17 +564,6 @@ void DccBroker::passiveCanvasExecute(DccDescriptor * dcc)
 
 void DccBroker::recvFileManage(DccDescriptor * dcc)
 {
-	if(dcc->bIsIncomingAvatar)
-	{
-		bool bOk;
-		quint64 size = dcc->szFileSize.toULongLong(&bOk);
-		if(bOk) {
-			if(size>=KVI_OPTION_UINT(KviOption_uintMaximumRequestedAvatarSize)) {
-				cancelDcc(0,dcc);
-				return;
-			}
-		}
-	}
 
 	if(!dcc->bAutoAccept)
 	{
@@ -608,24 +597,6 @@ void DccBroker::recvFileManage(DccDescriptor * dcc)
 				.arg(KviQString::makeSizeReadable(dcc->szFileSize.toULongLong()));
 		}
 
-		if(dcc->bIsIncomingAvatar)
-		{
-			tmp += __tr2qs_ctx( \
-					"<center><b>Note:</b></center>" \
-					"The file appears to be an avatar that you have requested. " \
-					"You should not change its filename. " \
-					"Save it in a location where KVIrc can find it, such as " \
-					"the 'avatars', 'incoming', or 'pics' directories, " \
-					"your home directory, or the save directory for the incoming file type. " \
-					"The default save path will probably work. " \
-					"You can instruct KVIrc to accept incoming avatars automatically " \
-					"by setting the option <tt>boolAutoAcceptIncomingAvatars</tt> to true.<br>" \
-				,"dcc" \
-				);
-		}
-
-		//#warning "Maybe remove the pending avatar if rejected ?"
-
 		QString title = __tr2qs_ctx("DCC %1 Request - KVIrc","dcc").arg(dcc->szType);
 
 		DccAcceptDialog * box = new DccAcceptDialog(this,dcc,tmp,title);
@@ -655,46 +626,42 @@ void DccBroker::chooseSaveFileName(DccDialog *box,DccDescriptor *dcc)
 
 	dcc->szLocalFileName = "";
 
-	if(dcc->bIsIncomingAvatar)g_pApp->getLocalKvircDirectory(dcc->szLocalFileName,KviApplication::Avatars);
-	else {
-
-		if(KVI_OPTION_BOOL(KviOption_boolUseIncomingDccMediaTypeSavePath))
+	if(KVI_OPTION_BOOL(KviOption_boolUseIncomingDccMediaTypeSavePath))
+	{
+		g_pMediaManager->lock();
+		if(KviMediaType * mt = g_pMediaManager->findMediaType(dcc->szFileName.toUtf8().data(),false))
 		{
-			g_pMediaManager->lock();
-			if(KviMediaType * mt = g_pMediaManager->findMediaType(dcc->szFileName.toUtf8().data(),false))
+			if(mt->szSavePath.hasData())
 			{
-				if(mt->szSavePath.hasData())
-				{
-					if(KviFileUtils::directoryExists(mt->szSavePath.ptr()))dcc->szLocalFileName = mt->szSavePath;
-					else {
-						if(KviFileUtils::makeDir(mt->szSavePath.ptr()))dcc->szLocalFileName = mt->szSavePath;
-					}
-					if(KVI_OPTION_BOOL(KviOption_boolSortReceivedByDccFilesByNicks))
-					{
-						KviQString::ensureLastCharIs(dcc->szLocalFileName,KVI_PATH_SEPARATOR_CHAR);
-						QString cleanNick = dcc->szNick;
-						KviFileUtils::cleanFileName(cleanNick);
-						dcc->szLocalFileName.append(cleanNick);
-						KviFileUtils::adjustFilePath(dcc->szLocalFileName);
-					}
-					KviFileUtils::makeDir(dcc->szLocalFileName);
+				if(KviFileUtils::directoryExists(mt->szSavePath.ptr()))dcc->szLocalFileName = mt->szSavePath;
+				else {
+					if(KviFileUtils::makeDir(mt->szSavePath.ptr()))dcc->szLocalFileName = mt->szSavePath;
 				}
-			}
-			g_pMediaManager->unlock();
-		}
-
-		if(dcc->szLocalFileName.isEmpty())
-		{
-			g_pApp->getLocalKvircDirectory(dcc->szLocalFileName,KviApplication::Incoming);
-			if(KVI_OPTION_BOOL(KviOption_boolSortReceivedByDccFilesByNicks))
-			{
-				KviQString::ensureLastCharIs(dcc->szLocalFileName,KVI_PATH_SEPARATOR_CHAR);
-				QString cleanNick = dcc->szNick;
-				KviFileUtils::cleanFileName(cleanNick);
-				dcc->szLocalFileName.append(cleanNick);
-				KviFileUtils::adjustFilePath(dcc->szLocalFileName);
+				if(KVI_OPTION_BOOL(KviOption_boolSortReceivedByDccFilesByNicks))
+				{
+					KviQString::ensureLastCharIs(dcc->szLocalFileName,KVI_PATH_SEPARATOR_CHAR);
+					QString cleanNick = dcc->szNick;
+					KviFileUtils::cleanFileName(cleanNick);
+					dcc->szLocalFileName.append(cleanNick);
+					KviFileUtils::adjustFilePath(dcc->szLocalFileName);
+				}
 				KviFileUtils::makeDir(dcc->szLocalFileName);
 			}
+		}
+		g_pMediaManager->unlock();
+	}
+
+	if(dcc->szLocalFileName.isEmpty())
+	{
+		g_pApp->getLocalKvircDirectory(dcc->szLocalFileName,KviApplication::Incoming);
+		if(KVI_OPTION_BOOL(KviOption_boolSortReceivedByDccFilesByNicks))
+		{
+			KviQString::ensureLastCharIs(dcc->szLocalFileName,KVI_PATH_SEPARATOR_CHAR);
+			QString cleanNick = dcc->szNick;
+			KviFileUtils::cleanFileName(cleanNick);
+			dcc->szLocalFileName.append(cleanNick);
+			KviFileUtils::adjustFilePath(dcc->szLocalFileName);
+			KviFileUtils::makeDir(dcc->szLocalFileName);
 		}
 	}
 	KviFileUtils::adjustFilePath(dcc->szLocalFileName);

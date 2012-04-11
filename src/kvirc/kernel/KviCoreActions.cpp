@@ -126,7 +126,7 @@ void register_core_actions(KviActionManager * m)
 		KVI_COREACTION_IDENTITYOPTIONS,
 		"options.edit -t OptionsWidget_identity",
 		__tr2qs("Configure Identity..."),
-		__tr2qs("Allows you to configure nickname, username, avatar etc..."),
+		__tr2qs("Allows you to configure nickname, username, etc..."),
 		KviActionManager::categorySettings(),
 		"kvi_bigicon_identity.png",
 		KviIconManager::Who,

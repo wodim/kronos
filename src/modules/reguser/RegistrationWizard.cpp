@@ -85,7 +85,7 @@ RegistrationWizard::RegistrationWizard(const QString &startMask,KviRegisteredUse
 	m_pPage1Layout->setMargin(8);
 
 	m_pLabel1 = new QLabel(m_pPage1);
-	m_pLabel1->setText(__tr2qs_ctx("<p>Welcome to the user registration wizard.<br>This process allows you to add an IRC user to the database and set properties for that user. KVIrc will be (hopefully) able to recognize the user, add him to the notify list, and display the associated avatar.<br><br>First of all, you must insert an <b>entry name or real name</b> for the user you're going to register. The name will be used to identify the database entry and has no specific requirements, it can be a given name, nickname, or just some text to remind you of the real person.<br>Examples: \"George W Bush\", \"Dubya\".\n</p>","register"));
+	m_pLabel1->setText(__tr2qs_ctx("<p>Welcome to the user registration wizard.<br>This process allows you to add an IRC user to the database and set properties for that user. KVIrc will be (hopefully) able to recognize the user and add him to the notify list.<br><br>First of all, you must insert an <b>entry name or real name</b> for the user you're going to register. The name will be used to identify the database entry and has no specific requirements, it can be a given name, nickname, or just some text to remind you of the real person.<br>Examples: \"George W Bush\", \"Dubya\".\n</p>","register"));
 	m_pLabel1->setWordWrap(true);
 
 	m_pPage1Layout->addWidget(m_pLabel1, 0, 0);
@@ -173,32 +173,6 @@ RegistrationWizard::RegistrationWizard(const QString &startMask,KviRegisteredUse
 
 
 
-
-	m_pPage3 = new QWidget(this);
-	m_pPage3Layout = new QGridLayout(m_pPage3);
-	m_pPage3Layout->setSpacing(4);
-	m_pPage3Layout->setMargin(8);
-
-	m_pLabel3 = new QLabel(m_pPage3);
-	m_pLabel3->setText(__tr2qs_ctx("<p>If you want to store an avatar image for this user, you can set it here. KVIrc will show the avatar in the userlist next to the user's nickname.<br>An avatar can be in any supported image format (PNG is recommended). Keep in mind that KVIrc stores avatars in memory and has to resize them to fit in the userlist, thus it's better to use small, low-resolution images.</p>","register"));
-	m_pLabel3->setWordWrap(true);
-	m_pPage3Layout->addWidget(m_pLabel3,0,0);
-
-	f = new QFrame(m_pPage3);
-	f->setFrameStyle(QFrame::HLine | QFrame::Sunken);
-	m_pPage3Layout->addWidget(f,1,0);
-
-	m_pAvatar = new KviPixmap();
-	m_pAvatarSelector = new KviPixmapSelector(m_pPage3,__tr2qs_ctx("Store an avatar for this user","register"),m_pAvatar,true);
-	m_pPage3Layout->addWidget(m_pAvatarSelector,2,0);
-
-	m_pPage3Layout->setRowStretch(2,1);
-
-	addPage(m_pPage3,__tr2qs_ctx("Step 3: Avatar Selection","register"));
-
-
-
-
 	m_pPage4 = new QWidget(this);
 	m_pPage4Layout = new QGridLayout(m_pPage4);
 	m_pPage4Layout->setSpacing(4);
@@ -270,7 +244,6 @@ RegistrationWizard::RegistrationWizard(const QString &startMask,KviRegisteredUse
 
 RegistrationWizard::~RegistrationWizard()
 {
-	delete m_pAvatar;
 	g_pRegistrationWizardList->setAutoDelete(false);
 	g_pRegistrationWizardList->removeRef(this);
 	g_pRegistrationWizardList->setAutoDelete(true);
@@ -354,17 +327,6 @@ void RegistrationWizard::accept()
 		m_pDb->addMask(u,mk);
 	}
 
-	m_pAvatarSelector->commit();
-
-	bool bSetAvatar = false;
-
-	if(!m_pAvatar->isNull())
-	{
-		QString szPath = m_pAvatar->path();
-		u->setProperty("avatar",szPath);
-		bSetAvatar = true;
-	}
-
 	if(m_pNotifyCheck->isChecked())
 	{
 		m1 = m_pNotifyNickEdit1->text();
@@ -382,9 +344,6 @@ void RegistrationWizard::accept()
 			if(!bLocalDb)g_pApp->restartNotifyLists();
 		}
 	}
-
-	if(bSetAvatar && !bLocalDb)
-		g_pApp->resetAvatarForMatchingUsers(u);
 
 	KviTalWizard::accept();
 

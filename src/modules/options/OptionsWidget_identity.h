@@ -57,50 +57,6 @@ protected:
 	void fill(QString &n1,QString &n2,QString &n3);
 };
 
-class AvatarSelectionDialog : public QDialog
-{
-	friend class OptionsWidget_identityAvatar;
-	Q_OBJECT
-public:
-	AvatarSelectionDialog(QWidget * par,const QString &szInitialPath);
-	~AvatarSelectionDialog();
-protected:
-	QLineEdit   * m_pLineEdit;
-	QString       m_szAvatarName;
-protected:
-	virtual void closeEvent(QCloseEvent * e);
-	const QString &avatarName(){ return m_szAvatarName; };
-protected slots:
-	void okClicked();
-	void cancelClicked();
-	void chooseFileClicked();
-};
-
-
-class AvatarDownloadDialog : public QDialog
-{
-	friend class OptionsWidget_identityAvatar;
-	Q_OBJECT
-public:
-	AvatarDownloadDialog(QWidget * par,const QString &szUrl);
-	~AvatarDownloadDialog();
-protected:
-	KviHttpRequest * m_pRequest;
-	QLabel         * m_pOutput;
-	QString          m_szErrorMessage;
-	QString          m_szLocalFileName;
-	QString          m_szUrl;
-protected:
-	virtual void closeEvent(QCloseEvent * e);
-	const QString & localFileName(){ return m_szLocalFileName; };
-	const QString & errorMessage(){ return m_szErrorMessage; };
-protected slots:
-	void startDownload();
-	void cancelClicked();
-	void downloadTerminated(bool bSuccess);
-	void downloadMessage(const QString &szMsg);
-};
-
 
 
 

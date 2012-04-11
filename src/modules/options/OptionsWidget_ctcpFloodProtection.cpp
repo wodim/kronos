@@ -69,7 +69,7 @@
 		requests, just select "PING" under the "Ignored Requests" section.[br]
 		[br][br]
 		Some specific protection options can be set also in other CTCP options sections:
-		see the [widget:ctcpavatarprotooptions]CTCP AVATAR protocol options[/widget] and [widget:ctcpdccprotooptions]CTCP DCC protocol options[/widget].[br]
+		see the [widget:ctcpdccprotooptions]CTCP DCC protocol options[/widget].[br]
 */
 
 
@@ -102,7 +102,6 @@ OptionsWidget_ctcpFloodProtection::OptionsWidget_ctcpFloodProtection(QWidget * p
 	addBoolSelector(g,__tr2qs_ctx("SOURCE","options"),KviOption_boolIgnoreCtcpSource);
 	addBoolSelector(g,__tr2qs_ctx("TIME","options"),KviOption_boolIgnoreCtcpTime);
 	addBoolSelector(g,__tr2qs_ctx("PAGE","options"),KviOption_boolIgnoreCtcpPage);
-	addBoolSelector(g,__tr2qs_ctx("AVATAR","options"),KviOption_boolIgnoreCtcpAvatar);
 	addBoolSelector(g,__tr2qs_ctx("DCC/TDCC","options"),KviOption_boolIgnoreCtcpDcc);
 
 	addRowSpacer(0,3,1,3);

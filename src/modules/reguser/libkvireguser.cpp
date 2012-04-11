@@ -657,8 +657,6 @@ static bool reguser_kvs_fnc_isIgnoreEnabled(KviKvsModuleFunctionCall * c)
 		is not given (or is an empty string).[br]
 		If the '-n' switch is used, and the user entry has been found in the database,
 		all the [doc:notify_list]notify lists[/doc] are restarted.[br]
-		If the '-a' switch is used, and there are users on IRC currently matched
-		by this reguser entry then their avatar is reset.
 		This is useful when you're changing someone's notify property.[br]
 		If the -q switch is used, the command runs in "quiet" mode and prints no warnings.[br]
 	@examples:
@@ -704,7 +702,6 @@ static bool reguser_kvs_cmd_setproperty(KviKvsModuleCommandCall * c)
 	} else {
 		u->setProperty(szProperty,szValue);
 		if(c->hasSwitch('n',"restartnotifylists"))g_pApp->restartNotifyLists();
-		if(c->hasSwitch('a',"resetavatar"))g_pApp->resetAvatarForMatchingUsers(u);
 	}
 	return true;
 }

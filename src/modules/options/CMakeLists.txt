@@ -5,7 +5,6 @@ SET(kvioptions_MOC_HDRS
 	OptionsDialog.h
 	OptionsInstanceManager.h
 	OptionsWidget_antiSpam.h
-	OptionsWidget_avatar.h
 	OptionsWidget_channel.h
 	OptionsWidget_connection.h
 	OptionsWidget_ctcp.h
@@ -51,7 +50,6 @@ SET(kvioptions_SRCS
 	OptionsDialog.cpp
 	OptionsInstanceManager.cpp
 	OptionsWidget_antiSpam.cpp
-	OptionsWidget_avatar.cpp
 	OptionsWidget_channel.cpp
 	OptionsWidget_connection.cpp
 	OptionsWidget_ctcp.cpp
