@@ -163,7 +163,6 @@ protected:
 	bool                m_bSelected;
 	KviUserListEntry  * m_pNext;
 	KviUserListEntry  * m_pPrev;
-	KviAnimatedPixmap * m_pAvatarPixmap;
 public:
 	/**
 	* \brief Returns the flags of the user
@@ -196,22 +195,12 @@ public:
 	*/
 	bool color(QColor & color);
 
-	/**
-	* \brief Updates the avatar data
-	* \return void
-	*/
-	void updateAvatarData();
-	void detachAvatarData();
-
 protected:
 	/**
 	* \brief Recalculates the size height for the entry
 	* \return void
 	*/
 	void recalcSize();
-private slots:
-	void avatarFrameChanged();
-	void avatarDestroyed();
 };
 
 /**
@@ -667,13 +656,6 @@ public:
 	KviUserListEntry * join(const QString & szNick, const QString & szUser = QString(), const QString & szHost = QString(), int iFlags = 0);
 
 	/**
-	* \brief Returns true if the avatar of a user is changed
-	* \param szNick The nickname of the user
-	* \return bool
-	*/
-	bool avatarChanged(const QString & szNick);
-
-	/**
 	* \brief Enables the updates on the view list area
 	* \param bEnable Whether or not to enable updates
 	* \return void
@@ -794,12 +776,6 @@ protected:
 	void updateScrollBarRange();
 
 	virtual void resizeEvent(QResizeEvent * e);
-public slots:
-	/**
-	* \brief Called when an animated avatar is updated (every frame)
-	* \return void
-	*/
-	void animatedAvatarUpdated(KviUserListEntry * e);
 };
 
 /**

@@ -25,7 +25,7 @@ INCLUDE_DIRECTORIES(
 )
 
 SUBDIRS(
-	about action actioneditor addon aliaseditor avatar
+	about action actioneditor addon aliaseditor
 	chan channelsjoin classeditor codetester config context
 	dcc dialog
 	editor eventeditor

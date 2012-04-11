@@ -24,7 +24,6 @@
 
 
 // FIXME: #warning "CTCP BEEP == WAKEUP == AWAKE"
-// FIXME: #warning "CTCP AVATARREQ or QUERYAVATAR"
 
 #include "KviControlCodes.h"
 #include "KviOsInfo.h"
@@ -349,10 +348,6 @@ extern KVIRC_API KviCtcpPageDialog * g_pCtcpPageDialog;
 		[b]Syntax: <0x01>ACTION<0x01>[/b][br]
 		The ACTION tag is used to describe an action.[br]
 		It should be sent through a NOTICE message and never generate a reply.[br]
-
-		[big]AVATAR (equivalent to ICON or FACE)[/big][br]
-		[b]Syntax: <0x01>AVATAR<0x01>[/b][br]
-		The AVATAR tag is used to query an user's avatar.[br]
 
 		[big]MULTIMEDIA (equivalent to MM or SOUND)[/big][br]
 		[b]Syntax: <0x01>MULTIMEDIA <filename><0x01>[/b][br]
@@ -1240,8 +1235,6 @@ static const char * ctcpTagTable[][2]=
 	{ "SOURCE"      , "Returns the client homepage URL"                             },
 	{ "TIME"        , "Returns the current local time"                              },
 	{ "ACTION"      , "Used to describe actions, generates no reply"                },
-	{ "AVATAR"      , "Returns the current avatar (may trigger a DCC GET) or" \
-                          " sets your own on this side if sent through a NOTICE"    },
 	{ "DCC"         , "Initiates a DCC connection (XDCC,TDCC)"                      },
 	{ "PAGE"        , "Leaves a message for this user"                              },
 	{ 0             , 0                                                             }
@@ -1507,210 +1500,6 @@ void KviIrcServerParser::parseCtcpRequestAction(KviCtcpMessage *msg)
 	}
 }
 
-// FIXME: #warning "UTSNAME ?...AND OTHER INFO ?...SYSTEM IDLE TIME ?...KVIRC IDLE TIME ?"
-
-void KviIrcServerParser::parseCtcpRequestAvatar(KviCtcpMessage *msg)
-{
-	// AVATAR
-	if(!KVI_OPTION_BOOL(KviOption_boolIgnoreCtcpAvatar))
-	{
-		QString szGenderTag=" ";
-		if(KVI_OPTION_STRING(KviOption_stringCtcpUserInfoGender).startsWith("m",Qt::CaseInsensitive)){
-			szGenderTag.append("M");
-		} else if(KVI_OPTION_STRING(KviOption_stringCtcpUserInfoGender).startsWith("f",Qt::CaseInsensitive)){
-			szGenderTag.append("F");
-		} else {
-			szGenderTag.append("?");
-		}
-
-		KviAvatar * a = msg->msg->console()->currentAvatar();
-		if(a)
-		{
-			if(!checkCtcpFlood(msg))
-			{
-				// FIXME: #warning "OPTION FOR SETTING A FIXED BIND ADDRESS FOR OUTGOING DCC OFFERS"
-				QString szUserMask;
-				msg->pSource->mask(szUserMask);
-
-				QString szReply,szFileName;
-				szFileName=a->name();
-				if(KVI_OPTION_BOOL(KviOption_boolDCCFileTransferReplaceOutgoingSpacesWithUnderscores))
-					szFileName.replace(" ","_");
-
-				// escape the spaces with the right octal code
-				encodeCtcpParameter(szFileName.toUtf8().data(),szReply);
-
-
-				if(!a->isRemote())
-				{
-					if(!g_pSharedFilesManager->addSharedFile(szFileName,a->localPath(),szUserMask,KVI_OPTION_UINT(KviOption_uintAvatarOfferTimeoutInSecs)))
-					{
-						msg->msg->console()->output(KVI_OUT_SYSTEMWARNING,__tr2qs("Unable to add file offer for file %Q (File not readable?)"),&(a->localPath()));
-					} else {
-						if(_OUTPUT_VERBOSE)
-						{
-							msg->msg->console()->output(KVI_OUT_SYSTEMMESSAGE,__tr2qs("Added %d sec file offer for file %Q (%Q) to recipient %Q"),
-								KVI_OPTION_UINT(KviOption_uintAvatarOfferTimeoutInSecs),&(a->name()),&(a->localPath()),&szUserMask);
-						}
-					}
-				}
-
-				szReply.append(szGenderTag);
-				replyCtcp(msg,szReply);
-			}
-		} else {
-			// no avatar set.. ignore channel requests if the user wishes
-			if(!IS_ME(msg->msg,msg->szTarget))
-			{
-				// channel target
-				if(KVI_OPTION_BOOL(KviOption_boolIgnoreChannelAvatarRequestsWhenNoAvatarSet))msg->bIgnored = true;
-			}
-			if(!msg->bIgnored)replyCtcp(msg,"");
-		}
-	} else msg->bIgnored = true;
-
-	echoCtcpRequest(msg);
-}
-
-
-void KviIrcServerParser::parseCtcpReplyAvatar(KviCtcpMessage *msg)
-{
-	QString szRemoteFile;
-	QString szGender;
-	QString decoded=msg->msg->console()->decodeText(msg->pData);
-
-	decoded = extractCtcpParameter(decoded.toUtf8().data(),szRemoteFile,true);
-	decoded = extractCtcpParameter(decoded.toUtf8().data(),szGender,true);
-	szRemoteFile = szRemoteFile.trimmed();
-
-	bool bPrivate = IS_ME(msg->msg,msg->szTarget);
-
-	QString textLine;
-	KviAvatar * avatar = 0;
-
-	bool bResetAvatar = true;
-
-	QString nickLink = QString("\r!n\r%1\r").arg(msg->pSource->nick());
-
-	KviIrcUserEntry * e = msg->msg->connection()->userDataBase()->find(msg->pSource->nick());
-	if(e){
-		if( (szGender=="m") || (szGender=="M") ) {
-			e->setGender(KviIrcUserEntry::Male);
-		} else if((szGender=="f") || (szGender=="F") ) {
-			e->setGender(KviIrcUserEntry::Female);
-		} else {
-			e->setGender(KviIrcUserEntry::Unknown);
-		}
-	}
-
-	QString szWhere = bPrivate ? __tr2qs("private") : __tr2qs("channel notification:");
-	QString szWhat = bPrivate ? __tr2qs("notification") : msg->szTarget;
-
-	if(szRemoteFile.isEmpty())
-	{
-		// avatar unset
-		textLine = QString(__tr2qs("%1 unsets avatar")).arg(nickLink);
-		if(_OUTPUT_VERBOSE)
-			KviQString::appendFormatted(textLine," (%Q %Q)",&szWhere,&szWhat);
-	} else {
-
-		// FIXME: #warning "The avatar should be the one with the requested size!!"
-		textLine = QString(__tr2qs("%1 changes avatar to %2")).arg(nickLink,szRemoteFile);
-		if(_OUTPUT_VERBOSE)
-			KviQString::appendFormatted(textLine," (%Q %Q)",&szWhere,&szWhat);
-
-		bool bIsUrl = KviQString::equalCIN("http://",szRemoteFile,7) && (szRemoteFile.length() > 7);
-		if(!bIsUrl)
-		{
-			// no hacks
-			KviQString::cutToLast(szRemoteFile,'/');
-			KviQString::cutToLast(szRemoteFile,'\\');
-		}
-
-		avatar = g_pIconManager->getAvatar(QString(),szRemoteFile);
-
-		if((avatar == 0) && e)
-		{
-			// we have no such file on our HD....
-			bResetAvatar = false;
-			// request DCC GET ?
-			if(KVI_OPTION_BOOL(KviOption_boolRequestMissingAvatars))
-			{
-				// FIXME: #warning "Request avatars only from registered users ?"
-				// FIXME: #warning "Ask before making the request ?"
-				if(bIsUrl)
-				{
-					QString szLocalFilePath;
-					QString szLocalFile = szRemoteFile;
-					g_pIconManager->urlToCachedFileName(szLocalFile);
-					g_pApp->getLocalKvircDirectory(szLocalFilePath,KviApplication::Avatars,szLocalFile);
-					KviQString::escapeKvs(&szLocalFilePath, KviQString::EscapeSpace);
-					QString szCommand = "http.get -w=nm ";
-					unsigned int uMaxSize = KVI_OPTION_UINT(KviOption_uintMaximumRequestedAvatarSize);
-					if(uMaxSize > 0)KviQString::appendFormatted(szCommand,"-m=%u ",uMaxSize);
-					szRemoteFile = szRemoteFile.replace(";","%3B");
-					szRemoteFile = szRemoteFile.replace("\"","%22");
-					szCommand += "\""+szRemoteFile+"\"";
-					szCommand += " ";
-					szCommand += szLocalFilePath;
-
-					if(KviKvsScript::run(szCommand,msg->msg->console()))
-					{
-						if(_OUTPUT_VERBOSE)
-						{
-							KviQString::appendFormatted(textLine,
-								__tr2qs(": No valid local copy of avatar available, requesting one (HTTP GET %s)"),
-								szRemoteFile.toUtf8().data());
-						}
-						g_pApp->setAvatarOnFileReceived(msg->msg->console(),
-							szRemoteFile,msg->pSource->nick(),msg->pSource->user(),msg->pSource->host());
-					} else {
-						if(_OUTPUT_VERBOSE)
-							KviQString::appendFormatted(textLine,__tr2qs(": No valid local copy of avatar available; failed to start an HTTP transfer, ignoring"));
-					}
-				} else {
-					if(!checkCtcpFlood(msg))
-					{
-						if(_OUTPUT_VERBOSE)
-						{
-							KviQString::appendFormatted(textLine,
-								__tr2qs(": No valid local copy of avatar available, requesting one (DCC GET %s)"),
-								szRemoteFile.toUtf8().data());
-						}
-
-						QString szFName;
-						encodeCtcpParameter(szRemoteFile.toUtf8().data(),szFName);
-						msg->msg->connection()->sendFmtData("PRIVMSG %s :%cDCC GET %s%c",
-								msg->msg->connection()->encodeText(msg->pSource->nick()).data(),0x01,msg->msg->connection()->encodeText(szFName.toUtf8().data()).data(),0x01);
-						g_pApp->setAvatarOnFileReceived(msg->msg->console(),
-							szRemoteFile,msg->pSource->nick(),msg->pSource->user(),msg->pSource->host());
-					} else {
-						if(_OUTPUT_VERBOSE)
-							KviQString::appendFormatted(textLine,__tr2qs(": No valid local copy of avatar available; flood limit exceeded, ignoring"));
-					}
-				}
-			} else {
-				if(_OUTPUT_VERBOSE)
-					KviQString::appendFormatted(textLine,__tr2qs(": No valid local copy of avatar available, ignoring"));
-			}
-		}
-	}
-
-	if(!e)
-	{
-		if(_OUTPUT_VERBOSE)
-			KviQString::appendFormatted(textLine,__tr2qs(": No such nickname in the user database, ignoring the change"));
-		msg->msg->console()->outputNoFmt(KVI_OUT_AVATAR,textLine);
-		return;
-	}
-
-	if(bResetAvatar)e->setAvatar(avatar);
-
-	msg->msg->console()->avatarChanged(avatar,msg->pSource->nick(),msg->pSource->user(),msg->pSource->host(),
-												msg->msg->haltOutput() ? QString() : textLine);
-}
-
-
 
 typedef void (*dccModuleCtcpDccParseRoutine)(KviDccRequest *par);
 
@@ -1762,19 +1551,6 @@ void KviIrcServerParser::parseCtcpRequestDcc(KviCtcpMessage *msg)
 	}*/
 
 	bool bIsFlood = checkCtcpFlood(msg);
-
-	if(bIsFlood &&
-			((kvi_strEqualCI(p.szType.ptr(),"SEND")) ||
-			(kvi_strEqualCI(p.szType.ptr(),"RSEND")) ||
-			(kvi_strEqualCI(p.szType.ptr(),"TSEND")) ||
-			(kvi_strEqualCI(p.szType.ptr(),"TRSEND"))
-		))
-	{
-		// don't consider as flood the avatars we have requested
-		if(g_pApp->findPendingAvatarChange(msg->msg->console(),msg->pSource->nick(),p.szParam1.ptr()))
-			bIsFlood = false;
-	}
-
 	if(!bIsFlood)
 	{
 		if(!msg->msg->haltOutput())

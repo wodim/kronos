@@ -27,7 +27,6 @@
 
 #include "kvi_settings.h"
 #include "KviCString.h"
-#include "KviAvatar.h"
 #include "KviTimeUtils.h"
 #include "KviPointerHashTable.h"
 
@@ -553,11 +552,6 @@ public:
 	* \return int
 	*/
 	int getSmallIconIdFromName(const QString & szName);
-
-	// if szLocalPath is empty then szName can be the identification
-	// string for the avatar
-	// if szName is empty then it is found from szLocalPath
-	KviAvatar * getAvatar(const QString & szLocalPath, const QString & szName);
 
 	void urlToCachedFileName(QString & szFName);
 

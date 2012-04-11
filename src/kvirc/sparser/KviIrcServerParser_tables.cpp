@@ -52,7 +52,6 @@ KviLiteralMessageParseStruct KviIrcServerParser::m_literalParseProcTable[]=
 KviCtcpMessageParseStruct KviIrcServerParser::m_ctcpRequestParseProcTable[]=
 {
 	{ "ACTION"     , PTM(parseCtcpRequestAction)     , 0 },
-	{ "AVATAR"     , PTM(parseCtcpRequestAvatar)     , 0 },
 	{ "CLIENTINFO" , PTM(parseCtcpRequestClientinfo) , 0 },
 	{ "DCC"        , PTM(parseCtcpRequestDcc)        , 0 },
 	{ "FINGER"     , PTM(parseCtcpRequestFinger)     , 0 },
@@ -70,7 +69,6 @@ KviCtcpMessageParseStruct KviIrcServerParser::m_ctcpRequestParseProcTable[]=
 KviCtcpMessageParseStruct KviIrcServerParser::m_ctcpReplyParseProcTable[]=
 {
 	{ "ACTION"     , PTM(parseCtcpRequestAction)     , 0 },
-	{ "AVATAR"     , PTM(parseCtcpReplyAvatar)       , 0 },
 	{ "CLIENTINFO" , PTM(parseCtcpReplyGeneric)      , 0 },
 	{ "DCC"        , PTM(parseCtcpRequestDcc)        , 0 },
 	{ "FINGER"     , PTM(parseCtcpReplyGeneric)      , 0 },

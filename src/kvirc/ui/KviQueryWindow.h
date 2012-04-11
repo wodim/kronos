@@ -191,13 +191,6 @@ public:
 	int selectedCount(){ return m_pUserListView->selectedCount(); };
 
 	/**
-	* \brief Called when the target changes the avatar
-	* \param szNick The nickname of the user
-	* \return bool
-	*/
-	bool avatarChanged(const QString & szNick){ return m_pUserListView->avatarChanged(szNick); };
-
-	/**
 	* \brief Notify us if we have common channels with the target
 	* \param szNick The nickname of the user
 	* \param szUser The username of the user

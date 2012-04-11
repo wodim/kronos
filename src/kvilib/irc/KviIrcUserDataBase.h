@@ -34,7 +34,6 @@
 #include "kvi_settings.h"
 #include "KviPointerHashTable.h"
 #include "KviCString.h"
-#include "KviAvatar.h"
 #include "KviRegisteredUserDataBase.h"
 #include "KviIrcUserEntry.h"
 

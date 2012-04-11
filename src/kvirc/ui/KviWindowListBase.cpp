@@ -57,6 +57,7 @@
 #include <QEvent>
 #include <QLabel>
 #include <QSplitterHandle>
+#include <QTimer>
 
 extern QPixmap * g_pActivityMeterPixmap;
 

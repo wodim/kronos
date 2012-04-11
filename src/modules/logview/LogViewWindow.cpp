@@ -55,6 +55,7 @@
 #include <QTabWidget>
 #include <QCheckBox>
 #include <QMenu>
+#include <QTimer>
 
 #include <limits.h> //for INT_MAX
 

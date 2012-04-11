@@ -220,17 +220,6 @@ void KviIrcServerParser::parseLiteralJoin(KviIrcMessage *msg)
 		KviUserListEntry * it = chan->join(szNick,szUser,szHost,iFlags);
 		if(iFlags)chan->updateCaption();
 
-		// FIXME: #warning "Trigger also OnMeVoice and OnMeOp here ?"
-		if(!(it->globalData()->avatar()))
-		{
-			KviAvatar * av = console->defaultAvatarFromOptions();
-			if(av)
-			{
-				it->globalData()->setAvatar(av);
-				console->avatarChanged(av,szNick,szUser,szHost,QString());
-			}
-		}
-
 		if(KVS_TRIGGER_EVENT_0_HALTED(KviEvent_OnMeJoin,chan))
 			msg->setHaltOutput();
 
@@ -251,11 +240,6 @@ void KviIrcServerParser::parseLiteralJoin(KviIrcMessage *msg)
 		iFlags = msg->connection()->serverInfo()->modeFlagFromModeChar(chExtMode);
 
 		KviUserListEntry * it = chan->join(szNick,szUser,szHost,iFlags);
-
-		// FIXME: #warning "Trigger also OnVoice and OnOp here ?"
-		// Note: checkDefaultAvatar() makes a KviRegisteredUser lookup
-		//       if later it is needed, make it return a pointer
-		if(!(it->globalData()->avatar()))console->checkDefaultAvatar(it->globalData(),szNick,szUser,szHost);
 
 		if(KVS_TRIGGER_EVENT_3_HALTED(KviEvent_OnJoin,chan,szNick,szUser,szHost))
 			msg->setHaltOutput();

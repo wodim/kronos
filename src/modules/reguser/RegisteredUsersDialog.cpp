@@ -778,29 +778,6 @@ void RegisteredUsersDialog::exportClicked()
 			} else {
 				if(!f.save(0))goto write_error;
 			}
-
-			QString avatar;
-			if(u->getProperty("avatar",avatar))
-			{
-				KviAvatar * av = g_pIconManager->getAvatar(QString(),avatar);
-				if(av)
-				{
-					if(!av->pixmap()->isNull())
-					{
-						if(!f.save(1))goto write_error;
-						QImageWriter io;
-						io.setDevice(&f);
-						io.setFormat("PNG");
-						if(!io.write(av->pixmap()->toImage()))goto write_error;
-					} else {
-						if(!f.save(0))goto write_error;
-					}
-				} else {
-					if(!f.save(0))goto write_error;
-				}
-			} else {
-				if(!f.save(0))goto write_error;
-			}
 		}
 	}
 

@@ -42,7 +42,6 @@
 
 class QToolBar;
 
-class KviAvatar;
 class KviDnsResolver;
 class KviIrcUserDataBase;
 class KviIrcUserEntry;
@@ -144,7 +143,6 @@ public:
 	// This connection info
 	//
 	inline QString currentNetworkName();
-	KviAvatar * currentAvatar();
 	//
 	// IRC Context wide helpers (connection related)
 	//
@@ -163,21 +161,6 @@ public:
 	// and -1 if OnHighlight called halt
 	// otherwise it returns <type>
 	int applyHighlighting(KviWindow *wnd,int type,const QString &nick,const QString &user,const QString &host,const QString &szMsg);
-	// Avatar helpers (conneciton related)
-	void resetAvatarForMatchingUsers(KviRegisteredUser * u);
-	// this should be protected at least
-	void avatarChangedUpdateWindows(const QString &nick,const QString &textLine);
-	void avatarChanged(KviAvatar * avatar,const QString &nick,const QString &user,const QString &host,const QString &textLine);
-	KviAvatar * setAvatar(const QString &nick,const QString &user,const QString &host,const QString &szLocalPath,const QString &szName);
-	void checkDefaultAvatar(KviIrcUserEntry *e,const QString &nick,const QString &user,const QString &host);
-	void setAvatarFromOptions();
-
-	// This returns the default avatar for the current KVIrc user
-	// if he has chosen a valid avatar in the options dialog
-	// otherwise returns 0.
-	// The avatar is allocated with new and must be deleted
-	// when no longer needed.
-	KviAvatar * defaultAvatarFromOptions();
 
 	void terminateConnectionRequest(bool bForce = false,const char * quitMsg = 0);
 

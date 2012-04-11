@@ -843,32 +843,6 @@ void KviIrcServerParser::parseNumericWhoReply(KviIrcMessage *msg)
 		KviQueryWindow * q = msg->connection()->findQuery(szNick);
 		if(q)
 			q->updateLabelText();
-
-		// Check for the avatar unless the entry refers to the local user (in which case
-		// the avatar should never be cached nor requested).
-		if(!IS_ME(msg,szNick))
-		{
-			//no avatar? check for a cached one
-			if(!e->avatar())
-			{
-				// FIXME: #warning "THE AVATAR SHOULD BE RESIZED TO MATCH THE MAX WIDTH/HEIGHT"
-				// maybe now we can match this user ?
-				msg->console()->checkDefaultAvatar(e,szNick,szUser,szHost);
-			}
-			//still no avatar? check if the user is exposing the fact that he's got one
-			if(!e->avatar())
-			{
-				if((szReal[0].unicode() == KviControlCodes::Color) && (szReal[1].unicode() & 4) && (szReal[2].unicode() == KviControlCodes::Reset))
-				{
-					if(KVI_OPTION_BOOL(KviOption_boolRequestMissingAvatars) && !e->avatarRequested())
-					{
-						QByteArray d = msg->connection()->encodeText(szNick);
-						msg->connection()->sendFmtData("%s %s :%c%s%c","PRIVMSG",d.data(),0x01,"AVATAR",0x01);
-						e->setAvatarRequested();
-					}
-				}
-			}
-		}
 		
 		//this has to be done after the avatar part
 		e->setRealName(szReal);
@@ -1204,17 +1178,6 @@ void KviIrcServerParser::parseNumericWhoisUser(KviIrcMessage *msg)
 		if(q)
 			q->updateLabelText();
 
-		// Check for the avatar unless the entry refers to the local user (in which case
-		// the avatar should never be cached nor requested).
-		if(!IS_ME(msg,szNick))
-		{
-			if(!e->avatar())
-			{
-				// FIXME: #warning "THE AVATAR SHOULD BE RESIZED TO MATCH THE MAX WIDTH/HEIGHT"
-				// maybe now we can match this user ?
-				msg->console()->checkDefaultAvatar(e,szNick,szUser,szHost);
-			}
-		}
 	}
 
 	KviAsyncWhoisInfo * i = msg->connection()->asyncWhoisData()->lookup(szNick);

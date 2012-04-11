@@ -30,7 +30,6 @@ KviIrcUserEntry::KviIrcUserEntry(const QString & szUser, const QString & szHost)
 {
 	m_szUser                  = szUser;
 	m_szHost                  = szHost;
-	m_pAvatar                 = 0;
 	m_nRefs                   = 1;
 	m_iHops                   = -1;
 	m_bAway                   = false;
@@ -39,14 +38,11 @@ KviIrcUserEntry::KviIrcUserEntry(const QString & szUser, const QString & szHost)
 	m_bBot                    = false;
 	m_bNotFoundRegUserLoockup = false;
 	m_bUseCustomColor         = false;
-	m_bAvatarRequested        = false;
 	m_iSmartNickColor         = -1;
 }
 
 KviIrcUserEntry::~KviIrcUserEntry()
 {
-	if(m_pAvatar)
-		delete m_pAvatar;
 }
 
 void KviIrcUserEntry::setRealName(const QString & szReal)
@@ -97,18 +93,4 @@ void KviIrcUserEntry::setRealName(const QString & szReal)
 			}
 		}
 	}
-}
-
-void KviIrcUserEntry::setAvatar(KviAvatar * pAvatar)
-{
-	if(m_pAvatar)
-		delete m_pAvatar;
-	m_pAvatar = pAvatar;
-}
-
-KviAvatar * KviIrcUserEntry::forgetAvatar()
-{
-	KviAvatar * pAvatar = m_pAvatar;
-	m_pAvatar = 0;
-	return pAvatar;
 }

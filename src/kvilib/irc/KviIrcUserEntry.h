@@ -34,7 +34,8 @@
 */
 
 #include "kvi_settings.h"
-#include "KviAvatar.h"
+
+#include <QColor>
 
 /**
 * \class KviIrcUserEntry
@@ -93,11 +94,8 @@ protected:
 	bool        m_bAway;
 	bool        m_bIrcOp;
 
-	KviAvatar * m_pAvatar;
-
 	int         m_nRefs;
 	bool        m_bBot;
-	bool        m_bAvatarRequested;
 
 	bool        m_bNotFoundRegUserLoockup; //wtf?
 	QString     m_szRegisteredUserName;
@@ -191,14 +189,6 @@ public:
 	void setIrcOp(bool bIrcOp){ m_bIrcOp = bIrcOp; };
 
 	/**
-	* \brief Sets the avatar of the user
-	* \param pAvatar The avatar
-	* \return void
-	* \warning The ownership passes to this class!
-	*/
-	void setAvatar(KviAvatar * pAvatar = 0);
-
-	/**
 	* \brief Sets the user global flags (eg: "G*")
 	* \param szFlags
 	* \return void
@@ -290,33 +280,10 @@ public:
 	int hops(){ return m_iHops; };
 
 	/**
-	* \brief Returns the avatar of the user
-	* \return KviAvatar
-	*/
-	KviAvatar * avatar(){ return m_pAvatar; };
-
-	/**
 	* \brief Returns the number of references of the user in the database
 	* \return int
 	*/
 	int nRefs(){ return m_nRefs; };
-
-	/**
-	* \brief Removes the avatar associated to the user
-	* \return KviAvatar *
-	*/
-	KviAvatar * forgetAvatar();
-
-	/**
-	* \brief Returns true if kvirc already made an attempt to download user's avatar
-	* \return bool
-	*/
-	bool avatarRequested() const { return m_bAvatarRequested; };
-
-	/**
-	* \brief Mark that kvirc is trying (already tried) to get user's avatar
-	*/
-	void setAvatarRequested() { m_bAvatarRequested = true; };
 };
 
 #endif // _KVI_IRCUSER_ENTRY_H_

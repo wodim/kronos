@@ -1592,11 +1592,6 @@ void KviIrcConnection::loginToIrcServer()
 		}
 	}
 
-	if(KVI_OPTION_BOOL(KviOption_boolPrependAvatarInfoToRealname) && !KVI_OPTION_STRING(KviOption_stringMyAvatar).isEmpty())
-	{
-		iGenderAvatarTag|=4;
-	}
-
 	if(KVI_OPTION_BOOL(KviOption_boolPrependNickColorInfoToRealname) &&
 		KVI_OPTION_BOOL(KviOption_boolUseSpecifiedSmartColorForOwnNick))
 	{
@@ -1628,20 +1623,8 @@ void KviIrcConnection::loginToIrcServer()
 	// permanent info in the user database
 	m_pConsole->notifyListView()->join(m_pUserInfo->nickName(),"*","*");
 
-	// set own avatar if we have it
+	// set user info (male/female)
 	KviIrcUserEntry * e = userDataBase()->find(userInfo()->nickName());
-	if(e) // should be there!
-	{
-		if(!e->avatar())
-		{
-			KviAvatar * av = m_pConsole->defaultAvatarFromOptions();
-			if(av)
-			{
-				e->setAvatar(av);
-				m_pConsole->notifyListView()->avatarChanged(userInfo()->nickName());
-			}
-		}
-	} // else buuug
 
 	if(KVI_OPTION_STRING(KviOption_stringCtcpUserInfoGender).startsWith("m",Qt::CaseInsensitive)){
 			e->setGender(KviIrcUserEntry::Male);

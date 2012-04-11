@@ -94,8 +94,6 @@ SET(kvilib_SRCS
 	file/KviPackageIOEngine.cpp
 	file/KviPackageReader.cpp
 	file/KviPackageWriter.cpp
-	irc/KviAvatar.cpp
-	irc/KviAvatarCache.cpp
 	irc/KviControlCodes.cpp
 	irc/KviIdentityProfile.cpp
 	irc/KviIdentityProfileSet.cpp

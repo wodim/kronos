@@ -247,10 +247,8 @@ private:
 	void parseCtcpRequestSource(KviCtcpMessage *msg);
 	void parseCtcpRequestAction(KviCtcpMessage *msg);
 	void parseCtcpRequestTime(KviCtcpMessage *msg);
-	void parseCtcpRequestAvatar(KviCtcpMessage *msg);
 	void parseCtcpRequestDcc(KviCtcpMessage *msg);
 	void parseCtcpRequestPage(KviCtcpMessage *msg);
-	void parseCtcpReplyAvatar(KviCtcpMessage *msg);
 	void parseCtcpReplyUserinfo(KviCtcpMessage *msg);
 	void parseCtcpReplyGeneric(KviCtcpMessage *msg);
 	void parseCtcpReplyPing(KviCtcpMessage *msg);

@@ -506,13 +506,6 @@ public:
 	KviUserListEntry * join(const QString & szNick, const QString & szUser = QString(), const QString & szHost = QString(), int iFlags = 0){ return m_pUserListView->join(szNick,szUser,szHost,iFlags); };
 
 	/**
-	* \brief Returns true if the avatar of a user is changed
-	* \param szNick The nickname of the user
-	* \return bool
-	*/
-	bool avatarChanged(const QString & szNick){ return m_pUserListView->avatarChanged(szNick); };
-
-	/**
 	* \brief Sets the chan owner mode
 	* \param szNick The nick to set the mode on
 	* \param bChanOwner Whether to set or unset the mode on the user

@@ -318,9 +318,6 @@ KviUserListEntry * KviQueryWindow::setTarget(const QString & szNick, const QStri
 {
 	KviUserListEntry * pEntry = m_pUserListView->join(szNick,szUser,szHost);
 
-	if((!pEntry->globalData()->avatar()) && (!szUser.isEmpty()) && (szUser != "*"))
-		m_pConsole->checkDefaultAvatar(pEntry->globalData(),szNick,szUser,szHost);
-
 	setWindowName(szNick);
 	updateCaption();
 

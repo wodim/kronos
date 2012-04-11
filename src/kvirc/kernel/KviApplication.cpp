@@ -65,7 +65,6 @@
 #include "KviFileTransfer.h"
 #include "KviControlCodes.h"
 #include "KviIrcUrl.h"
-#include "KviAvatarCache.h"
 #include "KviActionManager.h"
 #include "KviCustomToolBarManager.h"
 #include "KviFileUtils.h"
@@ -203,7 +202,6 @@ KviApplication::KviApplication(int &argc,char ** argv)
 	m_bCreateConfig         = false;
 	m_bShowSplashScreen     = true;
 	m_bUpdateGuiPending     = false;
-	m_pPendingAvatarChanges = NULL;
 	m_pRecentChannelDict    = NULL;
 #ifndef COMPILE_NO_IPC
 	m_pIpcSentinel          = NULL;
@@ -269,8 +267,6 @@ void KviApplication::setup()
 
 	// add KVIrc common dirs to QT searchpath
 	QString szPath;
-	getLocalKvircDirectory(szPath,None,"avatars");
-	QDir::addSearchPath("avatars",szPath);
 	getLocalKvircDirectory(szPath,None,"pics");
 	QDir::addSearchPath("pics",szPath);
 	getLocalKvircDirectory(szPath,None,"audio");
@@ -479,12 +475,7 @@ void KviApplication::setup()
 	if(getReadOnlyConfigPath(szTmp,KVI_CONFIGFILE_PROFILESDATABASE))
 		KviIdentityProfileSet::instance()->load(szTmp);
 
-	KVI_SPLASH_SET_PROGRESS(87)
-
-	KviAvatarCache::init();
-	if(getReadOnlyConfigPath(szTmp,KVI_CONFIGFILE_AVATARCACHE))
-		KviAvatarCache::instance()->load(szTmp);
-
+	// jumpy
 	KVI_SPLASH_SET_PROGRESS(88)
 
 	KviInputHistory::init();
@@ -637,8 +628,6 @@ KviApplication::~KviApplication()
 	saveMediaTypes();
 	delete g_pMediaManager;
 	saveRecentEntries();
-	saveAvatarCache();
-	KviAvatarCache::done();
 	//delete g_pBookmarkList;
 	delete g_pRecentTopicList;
 	saveRegisteredUsers();
@@ -674,8 +663,6 @@ KviApplication::~KviApplication()
 #ifdef COMPILE_PSEUDO_TRANSPARENCY
 	destroyPseudoTransparency();
 #endif
-	if(m_pPendingAvatarChanges)
-		delete m_pPendingAvatarChanges;
 	KviAnimatedPixmapCache::done();
 	// Kill the thread manager.... all the slave threads should have been already terminated ...
 #ifdef COMPILE_SSL_SUPPORT
@@ -804,13 +791,7 @@ Let's see the scheme to understand which is choosen:
 				if(!pEntry)
 					break;
 
-				KviAvatar * pAvatar = pEntry->globalData()->avatar();
-				if(!pAvatar)
-					break;
-
-				pIcon = pAvatar->pixmap();
-				if(!pIcon)
-					eIcon = KviIconManager::Query;
+				eIcon = KviIconManager::Query;
 			}
 			break;
 			case KviWindow::SocketSpy: eIcon = KviIconManager::Spy; break;
@@ -1155,138 +1136,6 @@ void KviApplication::destroySplashScreen()
 		g_pSplashScreen->die();
 }
 
-void KviApplication::setAvatarFromOptions()
-{
-	KviPointerHashTableIterator<QString,KviWindow> it(*g_pGlobalWindowDict);
-
-	while(it.current())
-	{
-		if(it.current()->type() == KviWindow::Console)
-		{
-			((KviConsoleWindow *)it.current())->setAvatarFromOptions();
-		}
-		++it;
-	}
-
-}
-
-void KviApplication::setAvatarOnFileReceived(KviConsoleWindow * pConsole, const QString & szRemoteUrl, const QString & szNick, const QString & szUser, const QString & szHost)
-{
-	if(!m_pPendingAvatarChanges)
-	{
-		m_pPendingAvatarChanges = new KviPointerList<KviPendingAvatarChange>;
-		m_pPendingAvatarChanges->setAutoDelete(true);
-	}
-
-	if(m_pPendingAvatarChanges->count() >= KVI_MAX_PENDING_AVATARS) // can't be...
-	{
-		m_pPendingAvatarChanges->removeFirst(); // kill the first entry
-	}
-
-	KviPendingAvatarChange * pAvatar = new KviPendingAvatarChange;
-	pAvatar->pConsole = pConsole;
-	pAvatar->szRemoteUrl = szRemoteUrl;
-	pAvatar->szNick = szNick;
-	pAvatar->szUser = szUser;
-	pAvatar->szHost = szHost;
-
-	m_pPendingAvatarChanges->append(pAvatar);
-}
-
-KviPendingAvatarChange * KviApplication::findPendingAvatarChange(KviConsoleWindow * pConsole, const QString & szNick, const QString & szRemoteUrl)
-{
-	if(!m_pPendingAvatarChanges)
-		return 0;
-
-	KviPendingAvatarChange * pAvatar;
-
-	for(pAvatar = m_pPendingAvatarChanges->first(); pAvatar; pAvatar = m_pPendingAvatarChanges->next())
-	{
-		if(!pConsole || (pAvatar->pConsole == pConsole))
-		{
-			if(szNick.isNull() || (szNick == pAvatar->szNick))
-			{
-				if(szRemoteUrl == pAvatar->szRemoteUrl)
-					return pAvatar;
-			}
-		}
-	}
-
-	return 0;
-}
-
-void KviApplication::fileDownloadTerminated(bool bSuccess, const QString & szRemoteUrl, const QString & szLocalFileName, const QString & szNick, const QString & szError, bool bQuiet)
-{
-	KviPendingAvatarChange * pAvatar;
-
-	if(m_pPendingAvatarChanges)
-		pAvatar = findPendingAvatarChange(0,szNick,szRemoteUrl);
-	else
-		pAvatar = 0;
-
-	if(!pAvatar)
-	{
-		// signal dcc completion only for NON-avatars
-		// FIXME: This option is misnamed and misplaced in the options dialog :(
-		//        it seems to refer only to DCC while it refers to any file transfer
-		if(KVI_OPTION_BOOL(KviOption_boolNotifyDccSendSuccessInNotifier) && (!bQuiet))
-		{
-			if(!g_pActiveWindow)
-				return;
-			if(g_pActiveWindow->hasAttention(KviWindow::MainWindowIsVisible))
-				return;
-			QString szMsg;
-			int iIconId;
-			if(!bSuccess)
-			{
-				iIconId = KviIconManager::DccError;
-				if(szNick.isEmpty())
-					szMsg = __tr2qs("File download failed");
-				else
-					szMsg = __tr2qs("File download from %1 failed").arg(szNick);
-				szMsg += ": ";
-				szMsg += szError;
-				szMsg += " (";
-				szMsg += szLocalFileName;
-				szMsg += ")";
-			} else {
-				iIconId = KviIconManager::DccMsg;
-				if(szNick.isEmpty())
-					szMsg = __tr2qs("File download successfully complete");
-				else
-					szMsg = __tr2qs("File download from %1 successfully complete").arg(szNick);
-				szMsg += " (";
-				szMsg += szLocalFileName;
-				szMsg += ")";
-			}
-			notifierMessage(0,iIconId,Qt::escape(szMsg),KVI_OPTION_UINT(KviOption_uintNotifierAutoHideTime));
-		}
-		return;
-	}
-
-	if(bSuccess)
-	{
-		if(windowExists(pAvatar->pConsole))
-		{
-			pAvatar->pConsole->setAvatar(pAvatar->szNick,pAvatar->szUser,pAvatar->szHost,szLocalFileName,KviQString::equalCIN("http://",szRemoteUrl,7) ? szRemoteUrl : QString());
-		}
-	} else {
-		if((!_OUTPUT_MUTE) && (!bQuiet))
-		{
-			pAvatar->pConsole->output(KVI_OUT_AVATAR,__tr2qs("Avatar download failed for %Q!%Q@%Q and url %Q: %Q"),
-				&(pAvatar->szNick),&(pAvatar->szUser),&(pAvatar->szHost),&(szRemoteUrl),&(szError));
-		}
-	}
-
-	m_pPendingAvatarChanges->removeRef(pAvatar);
-
-	if(m_pPendingAvatarChanges->count() == 0)
-	{
-		delete m_pPendingAvatarChanges;
-		m_pPendingAvatarChanges = 0;
-	}
-}
-
 #ifdef COMPILE_PSEUDO_TRANSPARENCY
 void KviApplication::destroyPseudoTransparency()
 {
@@ -1539,13 +1388,6 @@ void KviApplication::saveRecentEntries()
 	//cfg.writeEntry("Bookmarks",*g_pBookmarkList);
 }
 
-void KviApplication::saveAvatarCache()
-{
-	QString szTmp;
-	getLocalKvircDirectory(szTmp,Config,KVI_CONFIGFILE_AVATARCACHE);
-	KviAvatarCache::instance()->save(szTmp);
-}
-
 void KviApplication::saveToolBars()
 {
 	QString szTmp;
@@ -1692,7 +1534,6 @@ void KviApplication::saveConfiguration()
 	saveIrcServerDataBase();
 	saveProxyDataBase();
 	saveRecentEntries();
-	saveAvatarCache();
 	saveAppEvents();
 	saveRawEvents();
 	saveMediaTypes();
@@ -1867,20 +1708,6 @@ void KviApplication::restartNotifyLists()
 		{
 			if(((KviConsoleWindow *)it.current())->connection())
 				((KviConsoleWindow *)it.current())->connection()->restartNotifyList();
-		}
-		++it;
-	}
-}
-
-void KviApplication::resetAvatarForMatchingUsers(KviRegisteredUser * pUser)
-{
-	KviPointerHashTableIterator<QString,KviWindow> it(*g_pGlobalWindowDict);
-
-	while(it.current())
-	{
-		if(it.current()->type() == KviWindow::Console)
-		{
-			((KviConsoleWindow *)it.current())->resetAvatarForMatchingUsers(pUser);
 		}
 		++it;
 	}

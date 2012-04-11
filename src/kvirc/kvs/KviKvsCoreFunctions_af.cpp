@@ -35,7 +35,6 @@
 #include "KviIrcConnection.h"
 #include "KviIrcConnectionUserInfo.h"
 #include "KviControlCodes.h"
-#include "KviAvatar.h"
 #include "KviIrcUserDataBase.h"
 #include "KviMainWindow.h"
 #include "KviStatusBar.h"
